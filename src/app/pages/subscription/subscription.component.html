@@ -1,0 +1,122 @@
+<app-header></app-header>
+<ngx-spinner></ngx-spinner>
+
+<div style="width: 80%; margin-left: 10%;">
+  <div id="Subscription">
+
+    <div class="py-4">
+      <p class="Subs-Head">Subscription</p>
+      <div class="blue-box">
+        <p>Data Usage</p>
+        <!-- <p class="value-box">100</p> -->
+        <div class="slidecontainer">
+          <input type="range" min="1" max="100" value="0" class="slider" id="myRange" disabled>
+          <span>Min</span>
+          <span style="float: right;">Max</span>
+        </div>
+        <p>Notes Usage</p>
+        <p class="value-box">{{plandata.currentStatus.noteUsage}}</p>
+        <div class="slidecontainer">
+          <input type="range" min="0" max={{plandata.currentPlan.noteUsage}} value={{plandata.currentStatus.noteUsage}}
+            class="slider" id="myRange" disabled>
+          <span>0</span>
+          <span style="float: right;">{{plandata.currentPlan.noteUsage}}</span>
+
+        </div>
+        <p>Subject</p>
+        <p class="value-box">{{plandata.currentStatus.subjectUsage}}</p>
+        <div class="slidecontainer">
+          <input type="range" min="0" max={{plandata.currentPlan.subjectUsage}}
+            value={{plandata.currentStatus.subjectUsage}} class="slider" id="myRange" disabled>
+          <span>0</span>
+          <span style="float: right;">{{plandata.currentPlan.subjectUsage}}</span>
+        </div>
+      </div>
+      <p class="Subs-Head pt-3">Flexible Plans</p>
+      <p class="Subs-subHead">Choose a plan that works best for you</p>
+      <div class="p-3 w-100 d-flex">
+        <div class="subs-card" *ngFor="let plan of plans;" id={{plan._id}}>
+          <p class="plan-name white">{{plan.planName}}</p>
+          <p class="plan-price white">${{plan.planPrice}}
+            <span *ngIf="plan.planDuration==30" class="plan-month white">/1month</span>
+            <span *ngIf="plan.planDuration==60" class="plan-month white">/2month</span>
+            <span *ngIf="plan.planDuration==90" class="plan-month white">/3month</span>
+          </p>
+          <p class="plan-description white">For most of the bussinness that want optimised web quaries</p>
+          <p class="plan-feature white"><span><img src="../../../assets/images/right.png" class="tick" /></span> All
+            limited links</p>
+          <p class="plan-feature white"><span><img src="../../../assets/images/right.png" class="tick" /></span> Own
+            analytical problem</p>
+          <p class="plan-feature white"><span><img src="../../../assets/images/right.png" class="tick" /></span> Chat
+            support</p>
+          <p class="plan-feature white"><span><img src="../../../assets/images/right.png" class="tick" /></span>
+            {{plan.configration.dataUsage}}MB cloud space</p>
+          <div *ngIf="plan._id==currentPlan ;else other_content">
+            <button *ngIf="plan.planPrice==0 ;else other_content1" class="plan-button white">
+              Current Plan</button>
+            <ng-template #other_content1> <button class="plan-button white" (click)="onCancel()">Choose this
+                plan</button>
+            </ng-template>
+          </div>
+          <ng-template #other_content> <button data-toggle="modal" data-target="#onPay" class="plan-button white"
+              (click)="onChoosePlan(plan._id,plan.planPrice,plan.planDuration)">Choose this plan</button>
+          </ng-template>
+        </div>
+
+        <!-- new form -->
+        <!-- <button type="button" class="modal-close" (click)='onClose()' >close</button> -->
+        <div class="modal" id="onPay">
+          <div class="modal-dialog">
+            <div class="modal-content  curved p-0" style="width: 104%;;">
+              <!-- Modal Header -->
+              <!-- <div class="modal-header">
+                  <p class="Modal-heading">Stripe Payment</p>
+                  <button type="button" class="modal-close" (click)='onClose()' >close</button>
+                </div> -->
+              <div class="modal-body p-0">
+                <div class="container p-0">
+                  <div id="Checkout" class="inline">
+                    <h1>Stripe Payment</h1>
+                    <div class="card-row">
+                      <span class="visa"></span>
+                      <span class="mastercard"></span>
+                      <span class="amex"></span>
+                      <span class="discover"></span>
+                    </div>
+                    <form [formGroup]="stripeTest">
+                      <div class="form-group">
+                        <label or="NameOnCard" class="pay-label">Name on card</label>
+                        <input class="form-control pay-form" type="text" maxlength="255" formControlName="name" />
+                        <div *ngIf='stripeTestError.name' class="alert- mt-2">{{stripeTestError.name}}</div>
+                      </div>
+                      <div class="zip-code-group form-group">
+                        <label for="Email" class="pay-label">Email</label>
+                        <div class="input-container">
+                          <input class="form-control pay-form" formControlName="email" type="email" maxlength="99" />
+                          <div *ngIf='stripeTestError.email' class="alert- mt-2">{{stripeTestError.email}}</div>
+                          <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-placement="left"
+                            data-content="."><i class="fa fa-question-circle"></i></a>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="CreditCardNumber" class="pay-label">Card number</label>
+                        <!-- <input id="CreditCardNumber" class="null card-image form-control" type="text" /> -->
+                        <ngx-stripe-card [options]="cardOptions" class="form-control pay-form"
+                          [elementsOptions]="elementsOptions">
+                        </ngx-stripe-card>
+                      </div>
+
+                      <button id="PayButton" (click)="createToken()" class="btn btn-block btn-success submit-button"
+                        type="submit">
+                        <span class="submit-button-lock"></span>
+                        <span class="align-middle">Pay ${{planPrice}}</span>
+                      </button>
+                    </form>
+                  </div>
+                </div>
+                <!-- ends -->
+
+              </div>
+            </div>
+          </div>
+        </div> <!--  -->
